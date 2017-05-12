@@ -276,12 +276,17 @@
                 <arg>-b</arg>
                 <runif status="passed" />
               </exec>
+              <exec command="bash">
+                <arg>-c</arg>
+                <arg>mv plinth*.deb plinth.deb</arg>
+                <runif status="passed" />
+              </exec>
             </tasks>
             <resources>
               <resource>gbp</resource>
             </resources>
             <artifacts>
-              <artifact src="*.deb" dest="plinth.deb" />
+              <artifact src="plinth.deb" />
             </artifacts>
           </job>
         </jobs>
@@ -313,7 +318,7 @@
     </pipeline>
     <pipeline name="freedom-maker-raspberry2_dev" template="freedom-maker_dev">
       <params>
-        <param name="artifact_name">freedombox-unstable-nonfree_dailybuilder_raspberry2-armhf.img.xz</param>
+        <param name="artifact_name">freedombox-unstable-nonfree_dailyupstream_raspberry2-armhf.img.xz</param>
         <param name="apt_host">10.0.2.2:3142</param>
         <param name="pipeline_name">freedom-maker-raspberry2_dev</param>
         <param name="target">raspberry2</param>
@@ -422,8 +427,14 @@
               <variable name="ARTIFACT_UPLOAD_USER">
                 <value>dailybuilder</value>
               </variable>
+              <variable name="GO_SERVER_URL">
+                <value>http://10.0.2.2:8153</value>
+              </variable>
             </environmentvariables>
             <tasks>
+              <fetchartifact pipeline="plinth" stage="package" job="build_deb" srcfile="plinth.deb" dest="freedommaker_github">
+                <runif status="passed" />
+              </fetchartifact>
               <exec command="bash" workingdir="freedommaker_github">
                 <arg>-c</arg>
                 <arg>python3 -m freedommaker --build-mirror=http://#{apt_host}/debian --custom-package=plinth.deb --build-stamp=dailyupstream #{target} &amp;&amp; touch ../passed</arg>
@@ -523,3 +534,4 @@
     </agent>
   </agents>
 </cruise>
+
