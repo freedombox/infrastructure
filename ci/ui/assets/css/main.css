@@ -172,7 +172,8 @@ h2 {
 }
 
 .unknown {
-
+    color: #996633;
+    font-weight: bold;
 }
 
 h1.headlinegroup em {

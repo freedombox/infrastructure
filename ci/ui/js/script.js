@@ -42,14 +42,20 @@ var generatePipelineDiv = function (groupName, data) {
     outerDiv.append(ulList);
 
     return outerDiv;
-}
+};
 
 $.get(all_status_url, function(response) {
     response.forEach(function(group) {
         Promise.all(group.pipelines.map(function(pipeline) {
             return pipeline.name;
         }).map(function(name) {
-            return $.get("/status/" + name + "_status.json");
+            return $.get("/status/" + name + "_status.json").catch(
+                function(error) {
+                    return {
+                        "pipeline_name": name,
+                        "result": "Unknown"
+                    };
+                });
         })).then(function(values) {
             return values.map(function(value) {
                 return {
